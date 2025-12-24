@@ -1,4 +1,4 @@
-# 🤖 Sigma AI (Text + Image Generation)
+# Sigma AI (Text + Image Generation)
 
 A **modern, open-source AI chatbot** that supports:
 - 💬 Intelligent conversations using **LLaMA models via Groq**
