@@ -46,11 +46,35 @@ export default function ChatPage() {
     document.documentElement.classList.toggle("dark", newTheme === "dark")
   }
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, setMessages } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
+    onFinish: (message) => {
+      // Save messages when a response finishes
+      // Note: We need to access the latest messages here, but onFinish only gives the new message.
+      // Better to rely on useEffect for consistency.
+    },
   })
+
+  // Load messages from local storage on mount
+  useEffect(() => {
+    const savedMessages = localStorage.getItem("chat_messages")
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages))
+      } catch (e) {
+        console.error("Failed to parse saved messages", e)
+      }
+    }
+  }, [])
+
+  // Save messages to local storage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("chat_messages", JSON.stringify(messages))
+    }
+  }, [messages])
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
