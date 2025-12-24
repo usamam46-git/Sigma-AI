@@ -47,7 +47,9 @@ export default function ChatPage() {
   }
 
   const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat" }),
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
   })
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -252,9 +254,9 @@ export default function ChatPage() {
         <Card className="w-full max-w-4xl h-[600px] flex flex-col shadow-lg overflow-hidden">
           <div className="border-b px-4 py-2.5 flex items-center justify-between shrink-0">
             <div>
-              <h1 className="text-lg font-semibold">AI Gateway Starter</h1>
+              <h1 className="text-lg font-semibold">Sigma-AI</h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {mode === "chatbot" ? "anthropic/claude-sonnet-4.5" : "google/gemini-2.5-flash-image-preview"}
+                {mode === "chatbot" ? "llama-3.3-70b-versatile" : "google/gemini-2.5-flash-image-preview"}
               </p>
             </div>
             <div className="flex gap-1.5">
@@ -278,17 +280,15 @@ export default function ChatPage() {
                 />
                 <button
                   onClick={() => setMode("chatbot")}
-                  className={`relative z-10 w-28 flex items-center justify-center text-sm font-medium transition-colors duration-300 ${
-                    mode === "chatbot" ? "text-foreground" : "text-muted-foreground/60 hover:text-muted-foreground"
-                  }`}
+                  className={`relative z-10 w-28 flex items-center justify-center text-sm font-medium transition-colors duration-300 ${mode === "chatbot" ? "text-foreground" : "text-muted-foreground/60 hover:text-muted-foreground"
+                    }`}
                 >
                   Chatbot
                 </button>
                 <button
                   onClick={() => setMode("image")}
-                  className={`relative z-10 w-28 flex items-center justify-center text-sm font-medium transition-colors duration-300 ${
-                    mode === "image" ? "text-foreground" : "text-muted-foreground/60 hover:text-muted-foreground"
-                  }`}
+                  className={`relative z-10 w-28 flex items-center justify-center text-sm font-medium transition-colors duration-300 ${mode === "image" ? "text-foreground" : "text-muted-foreground/60 hover:text-muted-foreground"
+                    }`}
                 >
                   Image
                 </button>
@@ -311,11 +311,10 @@ export default function ChatPage() {
                         className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`relative max-w-[70%] px-3 py-2 text-base leading-relaxed rounded-2xl ${
-                            message.role === "user"
-                              ? "bg-foreground text-background after:content-[''] after:absolute after:bottom-2 after:-right-1.5 after:w-0 after:h-0 after:border-t-[6px] after:border-t-transparent after:border-l-[10px] after:border-l-foreground after:border-b-[6px] after:border-b-transparent"
-                              : "bg-muted text-foreground after:content-[''] after:absolute after:bottom-2 after:-left-1.5 after:w-0 after:h-0 after:border-t-[6px] after:border-t-transparent after:border-r-[10px] after:border-r-muted after:border-b-[6px] after:border-b-transparent"
-                          }`}
+                          className={`relative max-w-[70%] px-3 py-2 text-base leading-relaxed rounded-2xl ${message.role === "user"
+                            ? "bg-foreground text-background after:content-[''] after:absolute after:bottom-2 after:-right-1.5 after:w-0 after:h-0 after:border-t-[6px] after:border-t-transparent after:border-l-[10px] after:border-l-foreground after:border-b-[6px] after:border-b-transparent"
+                            : "bg-muted text-foreground after:content-[''] after:absolute after:bottom-2 after:-left-1.5 after:w-0 after:h-0 after:border-t-[6px] after:border-t-transparent after:border-r-[10px] after:border-r-muted after:border-b-[6px] after:border-b-transparent"
+                            }`}
                         >
                           {message.parts.map((part, index) => {
                             if (part.type === "text") {
@@ -331,7 +330,7 @@ export default function ChatPage() {
                       </div>
                     ))}
 
-                    {status === "in_progress" && (
+                    {(status === "streaming" || status === "submitted") && (
                       <div className="flex justify-start">
                         <div className="relative max-w-[70%] px-3 py-2 bg-muted rounded-2xl after:content-[''] after:absolute after:bottom-2 after:-left-1.5 after:w-0 after:h-0 after:border-t-[6px] after:border-t-transparent after:border-r-[10px] after:border-r-muted after:border-b-[6px] after:border-b-transparent">
                           <div className="flex gap-1.5">
@@ -354,13 +353,13 @@ export default function ChatPage() {
                     ref={inputRef}
                     name="message"
                     placeholder="Message..."
-                    disabled={status === "in_progress"}
+                    disabled={status === "streaming" || status === "submitted"}
                     className="flex-1 h-9"
                     autoComplete="off"
                     onKeyDown={handleKeyDown}
                     autoFocus
                   />
-                  <Button type="submit" disabled={status === "in_progress"} size="icon" className="shrink-0 h-9 w-9">
+                  <Button type="submit" disabled={status === "streaming" || status === "submitted"} size="icon" className="shrink-0 h-9 w-9">
                     <ArrowUp className="w-4 h-4" />
                     <span className="sr-only">Send</span>
                   </Button>
@@ -514,32 +513,7 @@ export default function ChatPage() {
 
         <div className="shrink-0">
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <a
-              href="https://vercel.com/ai-gateway"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              read more about AI Gateway
-            </a>
-            <span className="text-muted-foreground/40">•</span>
-            <a
-              href="https://v0.app/templates/ai-gateway-starter-jV5ixbx4BOl"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              open in v0
-            </a>
-            <span className="text-muted-foreground/40">•</span>
-            <a
-              href="https://x.com/estebansuarez"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              feedback? dm to @estebansuarez
-            </a>
+            <span>Powered by Sigma-AI</span>
           </div>
         </div>
       </div>

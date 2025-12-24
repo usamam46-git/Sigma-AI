@@ -8,9 +8,9 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "v0 AI Gateway Starter",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "Sigma-AI",
+  description: "Sigma-AI - Smart AI Assistant",
+  generator: "Sigma-AI",
 }
 
 export default function RootLayout({
